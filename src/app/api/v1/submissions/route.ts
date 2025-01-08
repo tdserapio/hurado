@@ -5,6 +5,7 @@ import { getSession } from "server/sessions";
 import { enqueueSubmissionJudgement } from "worker/queue";
 import { db } from "db";
 import { Language, TaskType } from "common/types/constants";
+import { SubmissionFileStorage } from "server/files";
 
 export async function POST(request: NextRequest) {
   const session = getSession(request);
@@ -60,9 +61,10 @@ export async function POST(request: NextRequest) {
 
   let sources: SubmissionFileCreate[];
 
-  if (task.type === TaskType.OutputOnly) {
+  if (task.type === TaskType.OutputOnly) {  
     const allowedFileNameList = await loadAllowedFilenames(submissionReq.task_id);
     const allowedFileNames = new Set(allowedFileNameList);
+
     sources = [];
     for (const [key, value] of formData.entries()) {
       if (!key.startsWith("$")) {
@@ -84,6 +86,61 @@ export async function POST(request: NextRequest) {
         filename: filename,
       });
     }
+
+    // load the old submission as well
+    const recentSubmissionFilesDb = await db
+      .selectFrom(
+        (qb) => qb
+          .selectFrom('submissions')
+          .where('task_id', '=', submissionReq.task_id)
+          .where('user_id', '=', session.user.id)
+          .orderBy('created_at', 'desc')
+          .select(['id'])
+          .limit(1)
+          .as('previousSubmission')
+      )
+      .innerJoin('submission_files', 'submission_files.submission_id', 'previousSubmission.id')
+      .innerJoin(
+        (eb) =>
+          eb
+            .selectFrom("tasks")
+            .where("tasks.id", "=", submissionReq.task_id)
+            .innerJoin("task_subtasks", "task_subtasks.task_id", "tasks.id")
+            .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
+            .select(["task_data.judge_file_name", "task_subtasks.order as subtask_order"])
+            .as("task_info"),
+        (join) => join.onRef("task_info.judge_file_name", "=", "submission_files.file_name")
+      )
+      .select(["submission_files.hash", "task_info.subtask_order"])
+      .execute();
+
+    for (const { hash, subtask_order } of recentSubmissionFilesDb) {
+      const filename = allowedFileNameList.at(subtask_order-1);
+      if (filename == undefined) {
+        continue;
+      }
+      if (sources.some((source) => source.filename === filename)) {
+        continue;
+      }
+
+      let buffer: Buffer | null;
+      try {
+        buffer = await SubmissionFileStorage.downloadToBuffer(hash);
+      } catch {
+        buffer = null;
+      }
+
+      if (buffer == null) {
+        continue;
+      }
+
+      const file = new File([buffer], filename, { type: "application/octet-stream" });
+      sources.push({
+        file,
+        filename,
+      });
+    }
+    
   } else {
     const formSource = formData.get("source");
     if (!(formSource instanceof File)) {
@@ -123,6 +180,7 @@ async function loadAllowedFilenames(taskId: string): Promise<string[]> {
   const data = await db
     .selectFrom("task_subtasks")
     .innerJoin("task_data", "task_data.subtask_id", "task_subtasks.id")
+    .orderBy(["task_subtasks.order", "task_data.order"])
     .where("task_subtasks.task_id", "=", taskId)
     .select("task_data.judge_file_name")
     .execute();
