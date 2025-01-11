@@ -18,6 +18,9 @@ export enum Path {
   ContestView = "ContestView",
   ContestEdit = "ContestEdit",
   ContestAttachment = "ContestAttachment",
+  AdminTaskList = "AdminTaskList",
+  AdminProblemSetList = "AdminProblemSetList",
+  AdminContestList = "AdminContestList",
 }
 
 export type PathArguments =
@@ -36,7 +39,10 @@ export type PathArguments =
   | { kind: Path.ContestList }
   | { kind: Path.ContestView; slug: string }
   | { kind: Path.ContestEdit; uuid: string }
-  | { kind: Path.ContestAttachment; slug: string; path: string };
+  | { kind: Path.ContestAttachment; slug: string; path: string }
+  | { kind: Path.AdminTaskList }
+  | { kind: Path.AdminProblemSetList }
+  | { kind: Path.AdminContestList };
 
 export function getPath(args: PathArguments) {
   switch (args.kind) {
@@ -72,6 +78,12 @@ export function getPath(args: PathArguments) {
       return `/contests/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.ContestAttachment:
       return `/contests/${args.slug}/attachments/${args.path}`;
+    case Path.AdminTaskList:
+      return "/admin/tasks";
+    case Path.AdminProblemSetList:
+      return "/admin/sets";
+    case Path.AdminContestList:
+      return "/admin/contests";
     default:
       throw new UnreachableError(args);
   }
@@ -86,6 +98,7 @@ export enum APIPath {
   FileHashes = "FileHashes",
   FileUpload = "FileUpload",
   TaskCreate = "TaskCreate",
+  TaskCreateSimple = "TaskCreateSimple",
   TaskUpdate = "TaskUpdate",
   TaskLookup = "TaskLookup",
   TaskSubmissions = "TaskSubmissions",
@@ -103,6 +116,7 @@ export type APIPathArguments =
   | { kind: APIPath.FileHashes }
   | { kind: APIPath.FileUpload }
   | { kind: APIPath.TaskCreate }
+  | { kind: APIPath.TaskCreateSimple }
   | { kind: APIPath.TaskUpdate; id: string }
   | { kind: APIPath.TaskLookup; id: string }
   | { kind: APIPath.TaskSubmissions; id: string }
@@ -125,6 +139,8 @@ export function getAPIPath(args: APIPathArguments) {
       });
     case APIPath.TaskCreate:
       return "/api/v1/tasks";
+    case APIPath.TaskCreateSimple:
+      return "/api/v1/tasks/simple";
     case APIPath.TaskUpdate:
       return `/api/v1/tasks/${args.id}`;
     case APIPath.TaskLookup:
