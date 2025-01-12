@@ -1,10 +1,10 @@
+
 import { redirect } from "next/navigation";
 import { getSession } from "server/sessions";
+import { PasswordResetPage } from "./password-reset-page";
 import { DefaultLayout } from "client/components/layouts/default_layout";
-import { RegisterPage } from "./register_page";
 
-
-export default function Page() {
+function Page() {
   const session = getSession();
   if (session != null) {
     redirect("/");
@@ -12,7 +12,9 @@ export default function Page() {
 
   return (
     <DefaultLayout>
-      <RegisterPage />
+      <PasswordResetPage />
     </DefaultLayout>
   );
 };
+
+export default Page;

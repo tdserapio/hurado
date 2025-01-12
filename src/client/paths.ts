@@ -6,6 +6,8 @@ export enum Path {
   AccountLogin = "AccountLogin",
   AccountLogout = "AccountLogout",
   AccountRegister = "AccountRegister",
+  AccountForgotPassword = "AccountForgotPassword",
+  AccountPasswordReset = "AccountPasswordReset",
   Submission = "Submission",
   TaskList = "TaskList",
   TaskView = "TaskView",
@@ -18,6 +20,7 @@ export enum Path {
   ContestView = "ContestView",
   ContestEdit = "ContestEdit",
   ContestAttachment = "ContestAttachment",
+  AdminHome = "AdminHome",
   AdminTaskList = "AdminTaskList",
   AdminProblemSetList = "AdminProblemSetList",
   AdminContestList = "AdminContestList",
@@ -28,6 +31,8 @@ export type PathArguments =
   | { kind: Path.AccountLogin }
   | { kind: Path.AccountLogout }
   | { kind: Path.AccountRegister }
+  | { kind: Path.AccountForgotPassword }
+  | { kind: Path.AccountPasswordReset, token: string }
   | { kind: Path.Submission; uuid: string }
   | { kind: Path.TaskList }
   | { kind: Path.TaskView; slug: string }
@@ -40,6 +45,7 @@ export type PathArguments =
   | { kind: Path.ContestView; slug: string }
   | { kind: Path.ContestEdit; uuid: string }
   | { kind: Path.ContestAttachment; slug: string; path: string }
+  | { kind: Path.AdminHome }
   | { kind: Path.AdminTaskList }
   | { kind: Path.AdminProblemSetList }
   | { kind: Path.AdminContestList };
@@ -54,6 +60,10 @@ export function getPath(args: PathArguments) {
       return "/logout";
     case Path.AccountRegister:
       return "/register";
+    case Path.AccountForgotPassword:
+      return "forgot-password";
+    case Path.AccountPasswordReset:
+      return `/password-reset?token=${args.token}`;
     case Path.Submission:
       return `/submissions/${uuidToHuradoID(args.uuid)}`;
     case Path.TaskList:
@@ -78,6 +88,8 @@ export function getPath(args: PathArguments) {
       return `/contests/${uuidToHuradoID(args.uuid)}/edit`;
     case Path.ContestAttachment:
       return `/contests/${args.slug}/attachments/${args.path}`;
+    case Path.AdminHome:
+      return "/admin";
     case Path.AdminTaskList:
       return "/admin/tasks";
     case Path.AdminProblemSetList:
@@ -92,6 +104,8 @@ export function getPath(args: PathArguments) {
 export enum APIPath {
   Login = "Login",
   Register = "Register",
+  ForgotPassword = "ForgotPassword",
+  ResetPassword = "ResetPassword",
   AttachmentFile = "AttachmentFile",
   SubmissionCreate = "SubmissionCreate",
   UserSubmissions = "UserSubmissions",
@@ -111,6 +125,8 @@ export enum APIPath {
 export type APIPathArguments =
   | { kind: APIPath.Login }
   | { kind: APIPath.Register }
+  | { kind: APIPath.ForgotPassword }
+  | { kind: APIPath.ResetPassword }
   | { kind: APIPath.SubmissionCreate }
   | { kind: APIPath.UserSubmissions; taskId?: string }
   | { kind: APIPath.FileHashes }
@@ -131,6 +147,10 @@ export function getAPIPath(args: APIPathArguments) {
       return "/api/v1/auth/login";
     case APIPath.Register:
       return "api/v1/auth/register";
+    case APIPath.ForgotPassword:
+      return "api/v1/auth/forgot-password";
+    case APIPath.ResetPassword:
+      return "api/v1/auth/reset-password";
     case APIPath.SubmissionCreate:
       return "/api/v1/submissions";
     case APIPath.UserSubmissions:
