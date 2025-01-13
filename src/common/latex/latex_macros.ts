@@ -70,13 +70,13 @@ export const LATEX_MACROS = {
     signature: "m m",
   },
   "section": {
-    signature: "m m",
+    signature: "s m",
   },
   "subsection": {
-    signature: "m m",
+    signature: "s m",
   },
   "subsubsection": {
-    signature: "m m",
+    signature: "s m",
   },
   includegraphics: {
     signature: "o m",

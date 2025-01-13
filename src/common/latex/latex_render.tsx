@@ -177,10 +177,8 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       const maybeStar = getStringArg(node.args, 0);
       if (maybeStar == '*') {
         return <h3 className="text-3xl font-bold">{renderArgumentContent(node.args, source, 1)}</h3>;
-      }
-      const maybeSectionText = getStringArg(node.args, 1);
-      if (maybeSectionText == null) {
-        return <h3 className="text-3xl font-bold">1. {renderArgumentContent(node.args, source, 0)}</h3>;
+      } else if (maybeStar == null) {
+        return <h3 className="text-3xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h3>;
       }
       return renderBroken(node, source);
     }
@@ -188,10 +186,8 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       const maybeStar = getStringArg(node.args, 0);
       if (maybeStar == '*') {
         return <h4 className="text-2xl font-bold">{renderArgumentContent(node.args, source, 1)}</h4>;
-      }
-      const maybeSubSectionText = getStringArg(node.args, 1);
-      if (maybeSubSectionText == null) {
-        return <h4 className="text-2xl font-bold">1. {renderArgumentContent(node.args, source, 0)}</h4>;
+      } else if (maybeStar == null) {
+        return <h4 className="text-2xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h4>;
       }
       return renderBroken(node, source);
     }
@@ -199,10 +195,8 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
       const maybeStar = getStringArg(node.args, 0);
       if (maybeStar == '*') {
         return <h5 className="text-xl font-bold">{renderArgumentContent(node.args, source, 1)}</h5>;
-      }
-      const maybeSubSubSectionText = getStringArg(node.args, 1);
-      if (maybeSubSubSectionText == null) {
-        return <h5 className="text-xl font-bold">1. {renderArgumentContent(node.args, source, 0)}</h5>;
+      } else if (maybeStar == null) {
+        return <h5 className="text-xl font-bold">1. {renderArgumentContent(node.args, source, 1)}</h5>;
       }
       return renderBroken(node, source);
     }
