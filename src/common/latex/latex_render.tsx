@@ -113,6 +113,7 @@ function LatexNodeDisplayMathX({ node, source }: LatexNodeProps<LatexNodeDisplay
 }
 
 function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): React.ReactNode {
+
   switch (node.content) {
     case "bf":
     case "textbf":
@@ -171,6 +172,15 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
           {renderArgumentContent(node.args, source, 1)}
         </a>
       );
+    }
+    case "section*": {
+      return <span className="text-3xl font-bold">{renderArgumentContent(node.args, source)}</span>;
+    }
+    case "subsection*": {
+      return <span className="text-2xl font-bold">{renderArgumentContent(node.args, source)}</span>;
+    }
+    case "subsubsection*": {
+      return <span className="text-xl font-bold">{renderArgumentContent(node.args, source)}</span>;
     }
     case "includegraphics": {
       // Don't use the second arg yet

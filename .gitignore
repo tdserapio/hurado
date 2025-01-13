@@ -134,3 +134,6 @@ dist
 
 # Development docker volumes
 volumes
+
+# For the mac users out there
+.DS_Store
