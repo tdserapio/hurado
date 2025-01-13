@@ -50,7 +50,7 @@ function LatexNodeAnyX({ node, source }: LatexNodeProps<LatexNode>): React.React
     case "displaymath":
       return <LatexNodeDisplayMathX node={node} source={source} />;
     case "parbreak":
-      return <br />;
+      return <div className="block mb-3.5" />;
     case "macro":
       return <LatexNodeMacroX node={node} source={source} />;
     case "environment":
