@@ -173,14 +173,32 @@ function LatexNodeMacroX({ node, source }: LatexNodeProps<LatexNodeMacro>): Reac
         </a>
       );
     }
-    case "section*": {
-      return <span className="text-3xl font-bold">{renderArgumentContent(node.args, source)}</span>;
+    case "section": {
+      if (node.args?.length == 2) {
+        const supposedText = getStringArg(node.args, 0);
+        if (supposedText == '*') {
+          return <h3 className="text-3xl font-bold">{getStringArg(node.args, 1)}</h3>;
+        }
+      }
+      return renderBroken(node, source);
     }
-    case "subsection*": {
-      return <span className="text-2xl font-bold">{renderArgumentContent(node.args, source)}</span>;
+    case "subsection": {
+      if (node.args?.length == 2) {
+        const supposedText = getStringArg(node.args, 0);
+        if (supposedText == '*') {
+          return <h4 className="text-2xl font-bold">{getStringArg(node.args, 1)}</h4>;
+        }
+      }
+      return renderBroken(node, source);
     }
-    case "subsubsection*": {
-      return <span className="text-xl font-bold">{renderArgumentContent(node.args, source)}</span>;
+    case "subsubsection": {
+      if (node.args?.length == 2) {
+        const supposedText = getStringArg(node.args, 0);
+        if (supposedText == '*') {
+          return <h5 className="text-xl font-bold">{getStringArg(node.args, 1)}</h5>;
+        }
+      }
+      return renderBroken(node, source);
     }
     case "includegraphics": {
       // Don't use the second arg yet
